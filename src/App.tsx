@@ -8,7 +8,7 @@ import EditTask from "./components/EditTask";
 import { supabase } from "./supabaseClient";
 import Login from "./pages/Login";
 import Register from "./pages/Register"; 
-// import PrivateRoute from "./components/PrivateRoute"; // Usuwamy w pierwszym kroku PrivateRoute bo nie działa trasa przekierowania na /tasks z logowaniem na chwilę chcę samo /tasks
+import PrivateRoute from "./components/PrivateRoute"; 
 
 const App = () => {
   const { data: tasks, error, isLoading } = useTasks();
@@ -21,19 +21,29 @@ const App = () => {
     queryClient.invalidateQueries({ queryKey: ["tasks"] });
   };
 
+  const handleLogout = async () => { 
+    console.log("Logging out user...");
+    await supabase.auth.signOut();
+    console.log("User logged out");
+    window.location.href = "/login"; 
+  };
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} /> {/* Dodać trasę rejestracji */}
-        <Route path="/" element={<Navigate to="/tasks" />} /> {/* Przekierowanie na /tasks */}
+        <Route path="/login" element={<Login handleLogout={handleLogout} />} /> 
+        <Route path="/register" element={<Register />} /> 
+        <Route path="/" element={<Navigate to="/tasks" />} /> 
         <Route path="/tasks" element={
-          // <PrivateRoute> // Usuń PrivateRoute
-            <div>
-              <h1 className="pl-10">Task List</h1>
+          <PrivateRoute> 
+            <>
+              <div className="flex justify-between items-center p-4"> 
+                <h1 className="text-xl font-bold">Task List</h1>
+                <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded">Log Out</button> 
+              </div>
               <NewTask />
 
               {editingTask !== null && (
@@ -61,8 +71,8 @@ const App = () => {
               ) : (
                 <p>No tasks available</p>
               )}
-            </div>
-          // </PrivateRoute> // Usuń PrivateRoute
+            </>
+          </PrivateRoute> 
         } />
       </Routes>
     </Router>

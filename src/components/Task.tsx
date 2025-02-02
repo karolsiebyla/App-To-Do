@@ -1,4 +1,3 @@
-//src/components/Task.tsx
 import { supabase } from "../supabaseClient";
 import { useQueryClient } from "@tanstack/react-query";
 

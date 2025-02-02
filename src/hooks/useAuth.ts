@@ -4,27 +4,40 @@ import { User } from "@supabase/supabase-js";
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      console.log("Fetched user:", data.user); // Dodajemy logowanie użytkownika, żeby sprawdzić, czy jest poprawnie zwracany
-      setUser(data.user ?? null);
+    const fetchUser = async () => {
+      setLoading(true);
+      const { data, error } = await supabase.auth.getUser();
+      if (error) {
+        console.error("Error fetching user:", error);
+      } else {
+        console.log("Fetched user from Supabase:", data?.user);
+        setUser(data?.user || null);
+      }
+      setLoading(false);
     };
 
-    checkUser();
+    fetchUser();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("Auth state changed, current user:", session?.user); // Dodajemy logowanie przy zmianie stanu autentykacji
-      setUser(session?.user ?? null);
-    });
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
+        console.log("Auth state changed. Session:", session);
+        if (session?.user) {
+          setUser(session.user);
+        } else {
+          setUser(null);
+        }
+      }
+    );
 
     return () => {
       authListener?.subscription.unsubscribe();
     };
   }, []);
 
-  return user;
+  return { user, loading };
 };
 
 export const signIn = async (email: string, password: string) => {
@@ -42,19 +55,5 @@ export const signIn = async (email: string, password: string) => {
     throw new Error("Email not confirmed");
   }
   console.log("signIn successful for user:", email);
-  return data;
-};
-
-export const signUp = async (email: string, password: string) => {
-  console.log("signUp called with email:", email);
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-  });
-  if (error) {
-    console.error("signUp error:", error);
-    throw error;
-  }
-  console.log("signUp successful for user:", email);
   return data;
 };

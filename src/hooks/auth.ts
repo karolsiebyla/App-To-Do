@@ -7,6 +7,9 @@ export const signIn = async (email: string, password: string) => {
     email,
     password,
   });
+
+  console.log("signIn response:", data, "error:", error);
+  
   if (error) {
     console.error("signIn error:", error);
     throw error;
@@ -15,7 +18,8 @@ export const signIn = async (email: string, password: string) => {
     console.error("Email not confirmed for user:", email);
     throw new Error("Email not confirmed");
   }
-  console.log("signIn successful for user:", email);
+
+  console.log("signIn successful, user data:", data.user);
   return data;
 };
 

@@ -1,7 +1,7 @@
-// src/pages/Register.tsx
+//src/pages/Register.tsx
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { signUp } from "../hooks/auth";  // Zaimportuj signUp z pliku auth
+import { signUp } from "../hooks/auth";  
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -16,7 +16,7 @@ const Register = () => {
     try {
       await signUp(email, password);
       console.log("Registration successful");
-      navigate("/login"); // Przekierowanie na stronę logowania po pomyślnym zalogowaniu
+      navigate("/login"); 
     } catch (error) {
       setErrorMessage((error as Error).message);
     }
