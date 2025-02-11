@@ -1,4 +1,3 @@
-//src/components/EditTask.tsx
 import { useState } from "react";
 import { supabase } from "../supabaseClient";
 import { useQueryClient } from "@tanstack/react-query";

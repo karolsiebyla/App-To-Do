@@ -1,4 +1,3 @@
-// src/hooks/auth.ts
 import { supabase } from "../supabaseClient";
 
 export const signIn = async (email: string, password: string) => {

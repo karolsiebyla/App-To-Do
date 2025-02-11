@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "../supabaseClient";
 
-// Pobieranie zadań z bazy Supabase
 export const useTasks = () => {
   return useQuery({
     queryKey: ["tasks"],
