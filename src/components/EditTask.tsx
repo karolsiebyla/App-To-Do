@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -15,11 +15,22 @@ const EditTask: React.FC<EditTaskProps> = ({ taskId, currentTitle, currentComple
   const [loading, setLoading] = useState(false);
   const queryClient = useQueryClient();
 
+  useEffect(() => {
+    setTitle(currentTitle);
+    setCompleted(currentCompleted);
+  }, [currentTitle, currentCompleted]);
+
   const handleUpdate = async () => {
     if (!title.trim()) return;
 
     setLoading(true);
-    await supabase.from("tasks").update({ title, completed }).eq("id", taskId);
+    console.log(`Updating task with ID: ${taskId}, title: ${title}, completed: ${completed}`);
+    const { error } = await supabase.from("tasks").update({ title, completed }).eq("id", taskId);
+    if (error) {
+      console.error('Error updating task:', error);
+      setLoading(false);
+      return;
+    }
     console.log(`Task updated: ${title}, completed: ${completed}`);
     setLoading(false);
     queryClient.invalidateQueries({ queryKey: ["tasks"] }); // Odświeżenie danych po zapisaniu edycji
@@ -34,13 +45,19 @@ const EditTask: React.FC<EditTaskProps> = ({ taskId, currentTitle, currentComple
           className="border p-2 w-full"
           type="text"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={(e) => {
+            setTitle(e.target.value);
+            console.log(`Editing title: ${e.target.value}`);
+          }}
         />
         <div className="flex items-center mt-4">
           <input
             type="checkbox"
             checked={completed}
-            onChange={(e) => setCompleted(e.target.checked)}
+            onChange={(e) => {
+              setCompleted(e.target.checked);
+              console.log(`Editing completed status: ${e.target.checked}`);
+            }}
             className="mr-2"
           />
           <label className="text-gray-700">Completed</label>

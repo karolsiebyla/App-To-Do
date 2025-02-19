@@ -19,7 +19,7 @@ const Task: React.FC<TaskProps> = ({ id, title, completed, onEdit, onDelete }) =
   };
 
   return (
-    <li className="flex items-center space-x-2 border-b p-2">
+    <li data-id={id} className="flex items-center space-x-2 border-b p-2">
       <input type="checkbox" checked={completed} onChange={toggleComplete} />
       <span className={`${completed ? "line-through text-gray-500" : ""}`}>{title}</span>
       <button onClick={onEdit} className="bg-yellow-400 px-2 py-1 rounded text-white ml-auto">Edit</button>
